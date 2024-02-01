@@ -60,7 +60,7 @@ def W_lind(w, Gam_p, wp):
 
 def find_eps(formula):
     # formula: str; should be a chemical formula
-    filename = "C:/Users/betha/Downloads/SrTiO3 DD/dielectrics.h5"
+    filename = "../dielectrics.h5"
     with h5py.File(filename, 'r') as fh:
         # Find the group with this formula
         formula_found = False
@@ -79,7 +79,7 @@ def find_eps(formula):
     return eps
 
 def find_density(formula):
-    materials = pd.read_csv("C:/Users/betha/Dropbox/shared/data/metadata.csv")
+    materials = pd.read_csv("../metadata.csv")
     for i in materials['index']:
         if formula == materials['formulae'][i]:
             return materials['density'][i]*5.6175E32 #g/cm^3 -> eV/cm^3
@@ -87,7 +87,7 @@ def find_density(formula):
     return np.nan
 
 def find_fermi_properties(formula):
-    materials = pd.read_csv("C:/Users/betha/Dropbox/shared/data/metadata.csv")
+    materials = pd.read_csv("../metadata.csv")
     for i in materials['index']:
         if formula == materials['formulae'][i]:
             efermi = materials['efermi'][i] # eV
@@ -117,13 +117,13 @@ def find_lindhard_params(material, formula, show_plots=False, use_mean_eps=True,
     peak_width = np.array(peak_widths(W, peaks))
     peak_width = peak_width[0] * (omega[1]-omega[0])
     peak_heights = properties['peak_heights']
-    
+
     if show_plots:
         total_W = np.zeros(len(W))
         for i in range(len(peaks)):
             total_W += W_lind(material["energy"], peak_width[i], omega[peaks][i])
         total_W /= len(peaks)
-        
+
         plt.loglog(omega, W, '-')
         plt.plot(omega[peaks], W[peaks], 'x')
     #     plt.loglog(material["energy"],  W_lind(material["energy"], peak_width[0], omega[peaks][0]))
@@ -144,4 +144,4 @@ def W_total(q, w, kfermi, vfermi, parameters):
     for i in range(len(parameters)):
         total_W += tf.cast(loss_function(Lindhard(q, w, parameters[i][0], kfermi, vfermi, parameters[i][1])), tf.complex128)
     total_W /= len(parameters)
-    return total_W  
+    return total_W
