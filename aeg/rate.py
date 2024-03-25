@@ -434,11 +434,12 @@ def rate(*args, n_iter=5, **kwargs):
     # Extract parameters and set up the integration range
     s = args[0]
     mX = kwargs.get('mX', 1.)
+    formula = kwargs.get('chem_formula', 'Si')
     w_max = kwargs.get('w_max', 1)
-    w_min = kwargs.get('w_min', 0)
+    w_min = kwargs.get('w_min', find_band_gap(formula))
     rq_max = kwargs.get('q_max', q_max(s, w_min, mX))
     rq_min = kwargs.get('q_min', q_min(w_min, mX))
-    formula = kwargs.get('chem_formula', 'Si')
+
 
     # Adaptive point sampling for Monte Carlo integration
     n_points = kwargs.get('n_points')

@@ -79,6 +79,8 @@ def find_eps(formula):
     return eps
 
 def find_density(formula):
+    # finds the density for any chemical formula
+    # based on material project data
     materials = pd.read_csv("../metadata.csv")
     for i in materials['index']:
         if formula == materials['formulae'][i]:
@@ -87,6 +89,9 @@ def find_density(formula):
     return np.nan
 
 def find_fermi_properties(formula):
+    # finds fermi energy for any chemical formula
+    # based on material project data
+    # calculates other fermi properties: fermi momentum, fermi velocity, w_p
     materials = pd.read_csv("../metadata.csv")
     for i in materials['index']:
         if formula == materials['formulae'][i]:
@@ -100,6 +105,28 @@ def find_fermi_properties(formula):
     print('material ' + formula + ' not found')
     return (np.nan, np.nan, np.nan, np.nan)
 
+def find_BZ_size(formula):
+    # finds the size of the Brillioun Zone for any
+    # chemical formula based on material project data
+    materials = pd.read_csv("metadata.csv")
+    for i in materials['index']:
+        if formula == materials['formulae'][i]:
+            return 2*np.pi/(materials['volume'][i])**(1/3) / eVtoInvA # Volume is in A^3
+
+    print('material ' + formula + ' not found')
+    return np.nan
+
+def find_band_gap(formula):
+    # finds the band gap energy for any
+    # chemical formula based on material project data
+    materials = pd.read_csv("metadata.csv")
+    for i in materials['index']:
+        if formula == materials['formulae'][i]:
+            return materials['bandgap'][i] # band gap is in eV
+
+    print('material ' + formula + ' not found')
+    return np.nan
+
 def find_lindhard_params(material, formula, show_plots=False, use_mean_eps=True, eps_dir='xx', compare_dir=False):
 
     if use_mean_eps:
@@ -109,11 +136,9 @@ def find_lindhard_params(material, formula, show_plots=False, use_mean_eps=True,
     omega = np.array(material['energy'])
 
     W = loss_function(eps)
-#     efermi, kfermi, vfermi, wp = find_fermi_properties(formula)
 
     peaks, properties = find_peaks(W, prominence=0.3, height=0.1, width=1)
-#     if len(peaks) ==0:
-#         return []
+
     peak_width = np.array(peak_widths(W, peaks))
     peak_width = peak_width[0] * (omega[1]-omega[0])
     peak_heights = properties['peak_heights']
